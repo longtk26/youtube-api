@@ -26,13 +26,12 @@ app.use("/v1/api", indexRoute);
 
 app.use((req, res, next) => {
   const err = new Error("Resources not found");
-
   err.status = 404;
   next(err);
 });
 
 app.use((err, req, res, next) => {
-  const statusCode = err.status || 500;
+  const statusCode = err.statusCode || 500;
 
   return res.status(statusCode).json({
     status: "Error",
