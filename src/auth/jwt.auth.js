@@ -1,6 +1,10 @@
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import KeyStoreService from "../services/keyStore.service.js";
 
-const createAccessAndRefreshToken = (payload, privateKey, publicKey) => {
+import { AuthFailureError } from "../core/error.response.js";
+
+const createAccessAndRefreshToken = (payload, privateKey) => {
   try {
     const accessToken = jwt.sign(payload, privateKey, {
       algorithm: "RS256",
@@ -29,4 +33,36 @@ const verifyAccessToken = (accessToken, publicKey) => {
   }
 };
 
-export { createAccessAndRefreshToken, verifyAccessToken };
+const handleTokens = async ({ userId, userName, email }) => {
+  const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
+    modulusLength: 4096,
+    publicKeyEncoding: {
+      type: "pkcs1",
+      format: "pem",
+    },
+    privateKeyEncoding: {
+      type: "pkcs1",
+      format: "pem",
+    },
+  });
+
+  const pKeyString = await KeyStoreService.savePublicKey({
+    pKey: publicKey,
+    userId,
+  });
+
+  if (!pKeyString) throw new AuthFailureError("Error when saving public key");
+
+  const tokens = createAccessAndRefreshToken(
+    {
+      userId,
+      userName,
+      email,
+    },
+    privateKey
+  );
+
+  return { tokens };
+};
+
+export { createAccessAndRefreshToken, verifyAccessToken, handleTokens };

@@ -5,10 +5,19 @@ class KeyStoreService {
   static async savePublicKey({ pKey, userId }) {
     const publicKeyString = pKey.toString();
 
-    const newKey = await KeyStore.create({
-      user_id: userId,
-      publickey: publicKeyString,
-    });
+    const newKey = await KeyStore.findOneAndUpdate(
+      {
+        user_id: userId,
+      },
+      {
+        publickey: publicKeyString,
+      },
+
+      {
+        upsert: true,
+        new: true,
+      }
+    );
 
     if (!newKey) throw new BadRequestError("Error when saving public key");
 
