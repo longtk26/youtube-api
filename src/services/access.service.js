@@ -18,9 +18,9 @@ class AccessService {
     if (!newUser) throw new AuthFailureError("Error when create new user");
 
     const { tokens } = await handleTokens({
-      userId: foundUser._id,
-      userName: foundUser.user_name,
-      email: foundUser.email,
+      userId: newUser._id,
+      userName: newUser.user_name,
+      email: newUser.email,
     });
 
     return {
