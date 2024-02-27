@@ -43,6 +43,54 @@ class ChannelService {
 
     return foundChannel;
   }
+
+  static async updateChannelInfo({
+    channel_name,
+    channel_description,
+    channel_image,
+    channel_user_id,
+  }) {
+    const foundChannel = await Channel.findOne({ channel_user_id }).lean();
+    if (!foundChannel) throw new NotFoundError("Channel not found");
+
+    let imageURL;
+
+    if (channel_image) {
+      imageURL = await CloudinaryService.upLoadFile({
+        fileName: channel_image,
+        folderName: "channels_profile",
+      });
+    }
+
+    const updatedChannel = await Channel.findOneAndUpdate(
+      { channel_user_id },
+      {
+        channel_name,
+        channel_description,
+        channel_image: imageURL,
+      },
+      { new: true, upsert: true }
+    ).lean();
+
+    if (!updatedChannel)
+      throw new BadRequestError("Some thing went wrong, please try again");
+
+    return updatedChannel;
+  }
+
+  static async deleteChannel({ channel_user_id, channel_id }) {
+    const foundChannel = await Channel.findOne({ channel_user_id }).lean();
+    if (!foundChannel) throw new NotFoundError("Channel not found");
+
+    const deletedChannel = await Channel.findOneAndDelete({
+      _id: channel_id,
+    }).lean();
+
+    if (!deletedChannel)
+      throw new BadRequestError("Some thing went wrong, please try again");
+
+    return deletedChannel;
+  }
 }
 
 export default ChannelService;

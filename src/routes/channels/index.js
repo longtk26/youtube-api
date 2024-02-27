@@ -14,7 +14,10 @@ channelRoute.use(authentication);
 
 channelRoute.post("/new", asyncHandler(channelsController.createChannel));
 channelRoute.get("/", asyncHandler(channelsController.getChannelByUser));
-channelRoute.patch("/:id", () => {});
-channelRoute.delete("/:id", () => {});
+channelRoute.patch("/", asyncHandler(channelsController.updateChannel));
+channelRoute.delete(
+  "/:channelId",
+  asyncHandler(channelsController.deleteChannel)
+);
 
 export default channelRoute;
