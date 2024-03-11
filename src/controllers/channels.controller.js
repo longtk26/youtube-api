@@ -5,9 +5,10 @@ class ChannelController {
   async createChannel(req, res) {
     const bodyData = {
       ...req.body,
-      ...req.files,
+      channel_image: req.file.path,
       channel_user_id: req.user.userId,
     };
+
     const data = await ChannelService.createChannel(bodyData);
 
     new Created({
@@ -41,9 +42,10 @@ class ChannelController {
   async updateChannel(req, res) {
     const bodyData = {
       ...req.body,
-      ...req.files,
+      channel_image: req.file.path,
       channel_user_id: req.user.userId,
     };
+
     const data = await ChannelService.updateChannelInfo(bodyData);
 
     new SuccessResponse({

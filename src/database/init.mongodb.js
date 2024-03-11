@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import configMongodb from "../config/config.mongodb.js";
+import configMongodb from "../config/mongodb.config.js";
 
 const {
   db: { host, port, name },

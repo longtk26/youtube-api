@@ -25,6 +25,7 @@ const videoSchema = new Schema(
     video_suitable_user: {
       type: String,
       enum: ["above 18", "below 18", "all"],
+      required: true,
     },
     video_description: {
       type: String,

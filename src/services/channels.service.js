@@ -13,8 +13,9 @@ class ChannelService {
     if (foundChannel) throw new BadRequestError("You already have a channel");
 
     const imageURL = await CloudinaryService.upLoadFile({
+      publicId: "channel_image",
       fileName: channel_image,
-      folderName: "channels_profile",
+      folderName: `channels/${channel_user_id}`,
     });
 
     const newChannel = await Channel.create({
@@ -57,8 +58,9 @@ class ChannelService {
 
     if (channel_image) {
       imageURL = await CloudinaryService.upLoadFile({
+        publicId: "channel_image",
         fileName: channel_image,
-        folderName: "channels_profile",
+        folderName: `channels/${channel_user_id}`,
       });
     }
 

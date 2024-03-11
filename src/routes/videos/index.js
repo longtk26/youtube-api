@@ -1,10 +1,20 @@
 import { Router } from "express";
 import { authentication } from "../../middlewares/auth.middleware.js";
+import { asyncHandler } from "../../helpers/asyncHandler.js";
+import videosController from "../../controllers/videos.controller.js";
+import upload from "../../config/multer.config.js";
 
 const videoRoute = Router();
 
 videoRoute.use(authentication);
-videoRoute.post("/new", () => {});
+videoRoute.post(
+  "/new",
+  upload.fields([
+    { name: "video_thumbnail", maxCount: 1 },
+    { name: "video_file", maxCount: 1 },
+  ]),
+  asyncHandler(videosController.postVideo)
+);
 videoRoute.get("/", () => {});
 videoRoute.get("/:videoId", () => {});
 videoRoute.patch("/:videoId", () => {});
