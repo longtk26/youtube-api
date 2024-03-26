@@ -93,6 +93,68 @@ class ChannelService {
 
     return deletedChannel;
   }
+
+  static async subscribeToChannel({ channel_id, user_id }) {
+    const foundChannel = await Channel.findOne({ _id: channel_id }).lean();
+    if (!foundChannel) throw new NotFoundError("Channel not found");
+
+    const isYourChanel = await Channel.findOne({
+      channel_user_id: user_id,
+    }).lean();
+
+    if (isYourChanel)
+      throw new BadRequestError("You can't subscribe to your own channel");
+
+    const isAlreadySubscribed = await Channel.findOne({
+      channel_subscribers: user_id,
+    }).lean();
+
+    if (isAlreadySubscribed)
+      throw new BadRequestError(
+        "You can't subscribe to a channel that already subscribed"
+      );
+
+    const updatedChannel = await Channel.findOneAndUpdate(
+      { _id: channel_id },
+      {
+        $inc: { channel_amount_subscribers: 1 },
+        $push: { channel_subscribers: user_id },
+      },
+      { new: true, upsert: true }
+    ).select(["channel_name", "channel_amount_subscribers"]);
+
+    return updatedChannel;
+  }
+
+  static async unsubscribeFromChannel({ channel_id, user_id }) {
+    const foundChannel = await Channel.findOne({ _id: channel_id }).lean();
+    if (!foundChannel) throw new NotFoundError("Channel not found");
+
+    const isYourChanel = await Channel.findOne({
+      channel_user_id: user_id,
+    }).lean();
+
+    if (isYourChanel)
+      throw new BadRequestError("You can't unsubscribe from your own channel");
+
+    const isInListSubscribers = await Channel.findOne({
+      channel_subscribers: user_id,
+    }).lean();
+
+    if (!isInListSubscribers)
+      throw new BadRequestError("You are not subscribed to this channel");
+
+    const updatedChannel = await Channel.findOneAndUpdate(
+      { _id: channel_id },
+      {
+        $inc: { channel_amount_subscribers: -1 },
+        $pull: { channel_subscribers: user_id },
+      },
+      { new: true, upsert: true }
+    ).select(["channel_name", "channel_amount_subscribers"]);
+
+    return updatedChannel;
+  }
 }
 
 export default ChannelService;

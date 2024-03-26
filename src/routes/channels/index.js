@@ -26,6 +26,15 @@ channelRoute.patch(
   upload.single("channel_image"),
   asyncHandler(channelsController.updateChannel)
 );
+channelRoute.patch(
+  "/subscribe/:channelId",
+  asyncHandler(channelsController.subscribeToChannel)
+);
+channelRoute.patch(
+  "/un-subscribe/:channelId",
+  asyncHandler(channelsController.unsubscribeFromChannel)
+);
+
 channelRoute.delete(
   "/:channelId",
   asyncHandler(channelsController.deleteChannel)

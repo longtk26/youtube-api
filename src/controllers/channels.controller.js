@@ -65,6 +65,30 @@ class ChannelController {
       metadata: data,
     }).send(res);
   }
+
+  async subscribeToChannel(req, res) {
+    const data = await ChannelService.subscribeToChannel({
+      user_id: req.user.userId,
+      channel_id: req.params.channelId,
+    });
+
+    new SuccessResponse({
+      message: "Channel subscribed successfully",
+      metadata: data,
+    }).send(res);
+  }
+
+  async unsubscribeFromChannel(req, res) {
+    const data = await ChannelService.unsubscribeFromChannel({
+      user_id: req.user.userId,
+      channel_id: req.params.channelId,
+    });
+
+    new SuccessResponse({
+      message: "Channel unsubscribed successfully",
+      metadata: data,
+    }).send(res);
+  }
 }
 
 export default new ChannelController();
