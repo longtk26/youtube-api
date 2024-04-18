@@ -1,6 +1,7 @@
 import { NotFoundError } from "../core/error.response.js";
 import Comment from "../models/comment.model.js";
 import { getComments } from "../models/repositories/comment.repo.js";
+import { findVideoById } from "../models/repositories/video.repo.js";
 
 class CommentService {
   static async postComment({
@@ -57,15 +58,51 @@ class CommentService {
     return newComment;
   }
 
-  static async getCommentsByVideoId({ comment_videoId }) {
-    return await getComments({ videoId: comment_videoId, parrentId: null });
-  }
-
   static async getCommentsByParrentId({ comment_parrentId, comment_videoId }) {
     return await getComments({
       videoId: comment_videoId,
       parrentId: comment_parrentId,
     });
+  }
+
+  static async deleteComments({ comment_id, comment_videoId }) {
+    const foundVideo = await findVideoById(comment_videoId);
+    if (!foundVideo) throw new NotFoundError("Video not found");
+
+    const foundComment = await Comment.findOne({ _id: comment_id });
+    if (!foundComment) throw new NotFoundError("Comment not found");
+
+    const leftValue = foundComment.comment_left;
+    const rightValue = foundComment.comment_right;
+    const width = rightValue - leftValue + 1;
+
+    await Comment.deleteMany({
+      comment_videoId,
+      comment_left: { $gte: leftValue },
+      comment_right: { $lte: rightValue },
+    });
+
+    await Comment.updateMany(
+      {
+        comment_videoId,
+        comment_left: { $gt: rightValue },
+      },
+      {
+        $inc: { comment_left: -width },
+      }
+    );
+
+    await Comment.updateMany(
+      {
+        comment_videoId,
+        comment_right: { $gt: rightValue },
+      },
+      {
+        $inc: { comment_right: -width },
+      }
+    );
+
+    return true;
   }
 }
 

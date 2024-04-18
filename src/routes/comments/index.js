@@ -5,13 +5,10 @@ import { authentication } from "../../middlewares/auth.middleware.js";
 
 const commentRoute = Router();
 
-commentRoute.get(
-  "/:videoId",
-  asyncHandler(commentController.getCommentsFirstLaunchVideo)
-);
-commentRoute.get("/", asyncHandler(commentController.getCommentsChild));
+commentRoute.get("/", asyncHandler(commentController.getComments));
 
 commentRoute.use(authentication);
 commentRoute.post("/new", asyncHandler(commentController.postComment));
+commentRoute.delete("/", asyncHandler(commentController.deleteComments));
 
 export default commentRoute;

@@ -14,18 +14,7 @@ class CommentController {
     }).send(res);
   }
 
-  async getCommentsFirstLaunchVideo(req, res) {
-    const data = await CommentService.getCommentsByVideoId({
-      comment_videoId: req.params.videoId,
-    });
-
-    return new SuccessResponse({
-      metadata: data,
-      message: "Get Comments successfully!",
-    }).send(res);
-  }
-
-  async getCommentsChild(req, res) {
+  async getComments(req, res) {
     const data = await CommentService.getCommentsByParrentId({
       comment_videoId: req.query.videoId,
       comment_parrentId: req.query.parrentId,
@@ -34,6 +23,15 @@ class CommentController {
     return new SuccessResponse({
       metadata: data,
       message: "Get Comments successfully!",
+    }).send(res);
+  }
+
+  async deleteComments(req, res) {
+    const data = await CommentService.deleteComments(req.body);
+
+    return new SuccessResponse({
+      metadata: data,
+      message: "Delete Comments successfully!",
     }).send(res);
   }
 }
