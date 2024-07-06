@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  youtube-api:
+    container_name: youtube-api
+    depends_on:
+      - mongo
+    build:  .
+    image: "leo/youtube-api"
+    ports:
+      - "8080:8080"
+    networks:
+      - youtube-api-network 
+    
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - youtube-api-network 
+  
+networks:
+  youtube-api-network:
+    external: true
+  

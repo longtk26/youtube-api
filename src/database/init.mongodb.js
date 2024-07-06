@@ -12,6 +12,8 @@ const envDatabase = {
 
 const connectString = envDatabase[process.env.NODE_ENV];
 
+console.log(`Connecting to ${connectString}`);
+
 class Database {
   constructor() {
     this.connect();
