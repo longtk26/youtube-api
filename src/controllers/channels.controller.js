@@ -5,7 +5,7 @@ class ChannelController {
   async createChannel(req, res) {
     const bodyData = {
       ...req.body,
-      channel_image: req.file.path,
+      channel_image: req?.file?.path,
       channel_user_id: req.user.userId,
     };
 

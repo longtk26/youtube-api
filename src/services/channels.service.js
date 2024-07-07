@@ -12,11 +12,14 @@ class ChannelService {
     const foundChannel = await Channel.findOne({ channel_user_id }).lean();
     if (foundChannel) throw new BadRequestError("You already have a channel");
 
-    const imageURL = await CloudinaryService.upLoadFile({
-      publicId: "channel_image",
-      fileName: channel_image,
-      folderName: `channels/${channel_user_id}`,
-    });
+    let imageURL;
+    if (channel_image) {
+      imageURL = await CloudinaryService.upLoadFile({
+        publicId: "channel_image",
+        fileName: channel_image,
+        folderName: `channels/${channel_user_id}`,
+      });
+    }
 
     const newChannel = await Channel.create({
       channel_user_id,

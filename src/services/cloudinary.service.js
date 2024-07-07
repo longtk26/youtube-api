@@ -1,4 +1,5 @@
 import { cloudinary } from "../config/cloudinary.config.js";
+import { SERVER_HTTPS } from "../constants/index.constant.js";
 
 class CloudinaryService {
   static async upLoadFile({ fileName, folderName, publicId }) {
@@ -15,29 +16,33 @@ class CloudinaryService {
     }
   }
 
-  static async uploadVideo({ videoFile, folderName, publicId }) {
+  static async uploadVideo({ videoFile, folderName, publicId, display_name }) {
     try {
       console.log(`uploadVideo: ${videoFile}`);
 
-      const result = await new Promise((resolve, reject) => {
+      new Promise((resolve, reject) => {
         cloudinary.uploader.upload_large(
           videoFile,
           {
             public_id: publicId,
             folder: folderName,
+            display_name: publicId,
             resource_type: "video",
+            notification_url: `${SERVER_HTTPS}/videos/hook`
           },
           (err, result) => {
             if (err) {
+              console.error("Error uploading video", err);
               reject(err);
             } else {
+              console.log("Video uploaded successfully");
               resolve(result);
             }
           }
         );
       });
 
-      return result.secure_url ? result.secure_url : "";
+      return "Your video is being uploaded, please wait for a moment!";
     } catch (error) {
       throw new Error("Error uploading video " + error.message);
     }

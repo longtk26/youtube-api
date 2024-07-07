@@ -16,7 +16,7 @@ const videoSchema = new Schema(
     },
     video_file: {
       type: String,
-      required: true,
+      default: ""
     },
     video_thumbnail: {
       type: String,

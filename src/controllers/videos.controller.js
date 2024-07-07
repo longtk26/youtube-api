@@ -5,8 +5,8 @@ class VideoController {
   async postVideo(req, res) {
     const videoInfo = {
       ...req.body,
-      video_thumbnail: req.files["video_thumbnail"][0].path ?? "",
-      video_file: req.files["video_file"][0].path,
+      video_thumbnail: req.files["video_thumbnail"] ? req.files["video_thumbnail"][0]?.path : null,
+      video_file: req?.files["video_file"][0]?.path,
     };
 
     const videoData = await VideoService.postVideo(videoInfo);
