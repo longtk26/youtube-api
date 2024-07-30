@@ -15,6 +15,12 @@ videoRoute.post(
   ]),
   asyncHandler(videosController.postVideo)
 );
+videoRoute.post(
+  "/uploads",
+  upload.array("videos", 15),
+  asyncHandler(videosController.uploadMultiVideos)
+);
+
 videoRoute.get("/", () => {});
 
 videoRoute.get("/:videoId", () => {});

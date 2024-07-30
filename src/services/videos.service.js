@@ -2,6 +2,7 @@ import { findChannelById } from "../models/repositories/channel.repo.js";
 import { BadRequestError, NotFoundError } from "../core/error.response.js";
 import CloudinaryService from "./cloudinary.service.js";
 import Video from "../models/video.model.js";
+import S3Service from "./s3.service.js";
 class VideoService {
   static async postVideo({
     video_channel_id,
@@ -75,6 +76,14 @@ class VideoService {
     if (!updateVideo) throw new NotFoundError("Video not found");
 
     return updateVideo;
+  }
+
+  static async uploadMultipleVideo({listVideos, user}) {
+    const result = await S3Service.upLoadMultiFiles({listFiles: listVideos, user});
+    
+    if (result !== "success") throw new BadRequestError("Something went wrong with upload S3");
+
+    
   }
 }
 

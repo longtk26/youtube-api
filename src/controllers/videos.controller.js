@@ -16,6 +16,16 @@ class VideoController {
       metadata: videoData,
     }).send(res);
   }
+
+  async uploadMultiVideos(req, res) {
+    const data = await VideoService.uploadMultipleVideo({listVideos: req.files, user: req.user})
+
+    new Created({
+      message: "Your video has already been uploaded! Please wait until we process it!",
+      metadata: data
+    }).send(res);
+  }
+
 }
 
 export default new VideoController();
