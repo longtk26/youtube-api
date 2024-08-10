@@ -20,4 +20,6 @@ class Created extends SuccessResponse {
   }
 }
 
+
+
 export { SuccessResponse, Created };

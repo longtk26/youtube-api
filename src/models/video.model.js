@@ -16,7 +16,7 @@ const videoSchema = new Schema(
     },
     video_file: {
       type: String,
-      default: ""
+      default: "",
     },
     video_thumbnail: {
       type: String,
@@ -25,7 +25,7 @@ const videoSchema = new Schema(
     video_suitable_user: {
       type: String,
       enum: ["above 18", "below 18", "all"],
-      required: true,
+      default: "all",
     },
     video_description: {
       type: String,

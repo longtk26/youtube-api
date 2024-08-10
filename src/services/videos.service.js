@@ -3,6 +3,7 @@ import { BadRequestError, NotFoundError } from "../core/error.response.js";
 import CloudinaryService from "./cloudinary.service.js";
 import Video from "../models/video.model.js";
 import S3Service from "./s3.service.js";
+import Channel from "../models/channel.model.js";
 class VideoService {
   static async postVideo({
     video_channel_id,
@@ -78,12 +79,65 @@ class VideoService {
     return updateVideo;
   }
 
-  static async uploadMultipleVideo({listVideos, user}) {
-    const result = await S3Service.upLoadMultiFiles({listFiles: listVideos, user});
-    
-    if (result !== "success") throw new BadRequestError("Something went wrong with upload S3");
+  /**
+   * @param {Array} listVideos
+   * @param {Buffer} listVideos[index].buffer
+   * @param {String} listVideos[index].originalname
+   * @param {String} listVideos[index].mimetype
+   * @param {Object} user
+   */
 
-    
+  static async uploadMultipleVideo({ listVideos, user }) {
+    const channelUser = await Channel.findOne({ channel_user_id: user.userId });
+    if (!channelUser) throw new BadRequestError("User doesn't have channel");
+
+    const listFilesPushedToS3 = [];
+    const listFilesResponse = [];
+
+    for (const file of listVideos) {
+      const videoTitleWithoutExtension = file.originalname.split(".")[0]; // remove file extension
+
+      const newVideo = await Video.create({
+        video_channel_id: channelUser._id,
+        video_title: videoTitleWithoutExtension,
+      });
+
+      if (!newVideo)
+        throw new BadRequestError("Something went wrong with upload video");
+
+      const fileUpload = {
+        ...file,
+        publicId: newVideo._id,
+      };
+
+      const fileResponse = {
+        video_id: newVideo._id,
+        video_title: file.originalname.split(".")[0], 
+      }
+
+      listFilesResponse.push(fileResponse);
+      listFilesPushedToS3.push(fileUpload);
+    }
+
+    const result = await S3Service.upLoadMultiFiles({
+      listFiles: listFilesPushedToS3,
+      channelUserId: channelUser._id,
+    });
+
+    if (result !== "success")
+      throw new BadRequestError("Something went wrong with upload S3");
+
+    return listFilesResponse;
+  }
+
+  /**
+   *
+   * @param {Object} videoInfo
+   *
+   */
+  static async updateUrlVideo(videoInfo) {
+    console.log(videoInfo);
+    return "success";
   }
 }
 
